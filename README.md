@@ -6,14 +6,11 @@ Subida del proyecto final elaborado en DataGrip
    1. [Integrantes del equipo](#integrantes-del-equipo)
    1. [Descripción de los datos](#descripción-de-los-datos)
    1. [Preguntas analíticas a contestar](#pregunta-analítica-a-contestar-con-el-modelo)
-   1. [Frecuencia de actualización de los datos](#frecuencia-de-actualización-de-los-datos)
 1. [Configuración](#configuración)
-   1. [Python y requerimientos](#python-y-requerimientos)
-   1. [Notebooks](#notebooks)
-   1. [Credenciales](#credenciales)
-   1. [Constantes](#constantes)
+   1. [DataGrip y requerimientos](#datagrip-y-requerimientos)
    1. [Base de datos](#base-de-datos)
-  
+1. [Estructura del proyecto](#estructura-del-proyecto)
+
 ## Proyecto
 
 ### Integrantes del equipo:
@@ -26,5 +23,12 @@ Subida del proyecto final elaborado en DataGrip
 
 
 ## Configuración
+
+### DataGrip y requerimientos
+
+### Base de datos
+
+
 ## Estructura del proyecto
-## Levantamiento del producto de datos
+
+
