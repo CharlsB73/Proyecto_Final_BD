@@ -2,70 +2,54 @@
 DROP SCHEMA IF EXISTS cleaning CASCADE;
 CREATE SCHEMA cleaning;
 
---CREATE TEMP TABLE temp_vehicle_data AS TABLE raw.vehicle_data WITH NO DATA;
-
-
-
-INSERT INTO raw.vehicle_data
-SELECT DISTINCT ON (vin) *
-FROM temp_vehicle_data;
-
-select *
-from raw.vehicle_data;
-
-CREATE SCHEMA IF NOT EXISTS cleaning;
-
-
-CREATE TABLE cleaning.vehicles (
-                                   vin TEXT PRIMARY KEY,
-                                   model_year INT,
-                                   make TEXT,
-                                   model TEXT,
-                                   electric_vehicle_type TEXT,
-                                   electric_range INT,
-                                   base_msrp DECIMAL
+DROP TABLE IF EXISTS cleaning.vehicle;
+CREATE TABLE cleaning.vehicle (
+    dol_vehicle_id BIGINT PRIMARY KEY,
+    vehicle_details_id BIGSERIAL references cleaning.vehicle_details(id),
+    postal_code varchar(10) references cleaning.location(postal_code),
+    electric_utility_id serial references cleaning.electric_utility(id)
 );
 
+DROP TABLE IF EXISTS cleaning.electric_utility;
+CREATE TABLE cleaning.electric_utility (
+    id SERIAL PRIMARY KEY,
+    name varchar(100)
+);
 
+DROP TABLE IF EXISTS cleaning.location;
 CREATE TABLE cleaning.location (
-                                   location_id BIGSERIAL PRIMARY KEY,
-                                   vin TEXT REFERENCES cleaning.vehicles(vin),
-                                   county TEXT,
-                                   city TEXT,
-                                   state TEXT,
-                                   postal_code VARCHAR(10),
-                                   vehicle_location TEXT,
-                                   census_tract BIGINT
+    postal_code varchar(10) PRIMARY KEY,
+    county varchar(50),
+    state varchar(50),
+    city varchar(50),
+    vehicle_location text,
+    legislative_district varchar(4)
 );
 
-
-CREATE TABLE cleaning.energy_utility (
-                                         utility_id BIGSERIAL PRIMARY KEY,
-                                         vin TEXT REFERENCES cleaning.vehicles(vin),
-                                         electric_utility TEXT,
-                                         cafv_eligibility TEXT,
-                                         legislative_district INT,
-                                         dol_vehicle_id BIGINT
+DROP TABLE IF EXISTS cleaning.vehicle_details;
+CREATE TABLE cleaning.vehicle_details (
+    id bigserial primary key ,
+    model varchar(50),
+    make varchar(50),
+    model_year smallint,
+    vehicle_type varchar(50),
+    range smallint,
+    baseMSRP numeric(10,2),
+    CAFV varchar(100)
 );
 
-
-INSERT INTO cleaning.vehicles (vin, model_year, make, model, electric_vehicle_type, electric_range, base_msrp)
-SELECT DISTINCT vin, model_year, make, model, electric_vehicle_type, electric_range, base_msrp
+--Primera etapa de limpieza: limpieza general y orden
+INSERT INTO cleaning.vehicle
+SELECT distinct dol_vehicle_id,
+       vehicle_details_id,
+       postal_code,
+       electric_utility
 FROM raw.vehicle_data;
 
 
-INSERT INTO cleaning.location (vin, county, city, state, postal_code, vehicle_location, census_tract)
-SELECT vin, county, city, state, postal_code, vehicle_location, census_tract
-FROM raw.vehicle_data;
 
-
-INSERT INTO cleaning.energy_utility (vin, electric_utility, cafv_eligibility, legislative_district, dol_vehicle_id)
-SELECT vin, electric_utility, cafv_eligibility, legislative_district, dol_vehicle_id
-FROM raw.vehicle_data;
-
-
-SELECT COUNT(*) FROM cleaning.vehicles;
+SELECT COUNT(*) FROM cleaning.vehicle;
 SELECT COUNT(*) FROM cleaning.location;
-SELECT COUNT(*) FROM cleaning.energy_utility;
+SELECT COUNT(*) FROM cleaning.vehicle_details;
 
 DROP TABLE raw.vehicle_data;
