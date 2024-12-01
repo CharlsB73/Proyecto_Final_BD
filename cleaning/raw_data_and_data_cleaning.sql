@@ -1,3 +1,4 @@
+-- Cambio de prueba jeje
 
 DROP SCHEMA IF EXISTS cleaning CASCADE;
 CREATE SCHEMA cleaning;
