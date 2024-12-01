@@ -1,10 +1,9 @@
 
+DROP SCHEMA IF EXISTS cleaning CASCADE;
+CREATE SCHEMA cleaning;
 
+--CREATE TEMP TABLE temp_vehicle_data AS TABLE raw.vehicle_data WITH NO DATA;
 
-CREATE TEMP TABLE temp_vehicle_data AS TABLE raw.vehicle_data WITH NO DATA;
-
-
-\copy temp_vehicle_data (vin, county, city, state, postal_code, model_year, make, model, electric_vehicle_type, cafv_eligibility, electric_range, base_msrp, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM '/Users/carlitos73/Documents/ITAM/Cuarto_Semestre/Bases_de_Datos/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 
 
 INSERT INTO raw.vehicle_data

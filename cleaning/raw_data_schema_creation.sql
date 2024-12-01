@@ -21,3 +21,5 @@ CREATE TABLE raw.vehicle_data (
                                   electric_utility TEXT, -- Ejemplo: PUGET SOUND ENERGY INC
                                   census_tract BIGINT    -- Ejemplo: 53035091301
 );
+
+\copy raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, electric_vehicle_type, cafv_eligibility, electric_range, base_msrp, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM '/Users/carlitos73/Documents/ITAM/Cuarto_Semestre/Bases_de_Datos/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
