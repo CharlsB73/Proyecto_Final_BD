@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS cleaning.location;
 CREATE TABLE cleaning.location (
     id BIGSERIAL PRIMARY KEY,
     postal_code VARCHAR(10),
-    country VARCHAR(50),
+    county VARCHAR(50),
     state VARCHAR(2),
     city VARCHAR(50),
     legislative_district VARCHAR(2),
@@ -64,8 +64,8 @@ SELECT * FROM cleaning.electric_utility;
 
 
 -- Inserción de los datos de la ubicación del vehìculo
-INSERT INTO cleaning.location (postal_code, country, state, city, vehicle_location, legislative_district)
-SELECT DISTINCT postal_code,country, state, city, vehicle_location, legislative_district
+INSERT INTO cleaning.location (postal_code, county, state, city, vehicle_location, legislative_district)
+SELECT DISTINCT postal_code,county, state, city, vehicle_location, legislative_district
 FROM raw.vehicle_data;
 
 -- Comprobar que los datos se agregaron de manera correcta (1,438 tuplas)
@@ -101,7 +101,7 @@ LEFT JOIN cleaning.location loc
     ON rv.postal_code = loc.postal_code
     AND rv.city = loc.city
     AND rv.legislative_district = loc.legislative_district
-    AND rv.country = loc.country
+    AND rv.county = loc.county
 LEFT JOIN cleaning.vehicle_details vd
     ON rv.model = vd.model
     AND rv.model_year = vd.model_year
@@ -111,3 +111,69 @@ LEFT JOIN cleaning.vehicle_details vd
 
 -- Comprobar que los datos se agregaron de manera correcta (205,436 tuplas)
 SELECT * FROM cleaning.vehicle;
+
+
+
+
+
+
+-- Cantidad de vehículos registrados por año
+SELECT cleaning.vehicle_details.model_year,
+       COUNT(cleaning.vehicle.dol_vehicle_id)
+FROM cleaning.vehicle
+INNER JOIN cleaning.vehicle_details
+    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
+group by cleaning.vehicle_details.model_year
+ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
+
+
+-- Cantidad de vehículos registrados por condado en Washington
+SELECT cleaning.location.county,
+       COUNT(cleaning.vehicle.dol_vehicle_id)
+FROM cleaning.vehicle
+INNER JOIN cleaning.location
+    ON cleaning.vehicle.location_id = cleaning.location.id
+    AND cleaning.location.state = 'WA'
+GROUP BY cleaning.location.county
+ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
+
+
+-- Top 10 de fabricantes segun la autonomía de  com mayor autonomía
+WITH vehiculosRankeados AS (
+    SELECT cleaning.vehicle_details.make,
+           cleaning.vehicle_details.model,
+           cleaning.vehicle_details.model_year,
+           cleaning.vehicle_details.range,
+           RANK() OVER (PARTITION BY make ORDER BY cleaning.vehicle_details.range DESC) AS rank
+    FROM cleaning.vehicle_details
+)
+
+SELECT DISTINCT(make), model, model_year, range
+FROM vehiculosRankeados
+WHERE rank = 1
+ORDER BY range DESC
+LIMIT 10;
+
+
+-- Top 8 compañías de electricidad con mayor cantidad de vehículos asignados
+SELECT cleaning.electric_utility.name,
+       COUNT(cleaning.vehicle.dol_vehicle_id)
+FROM cleaning.vehicle
+INNER JOIN cleaning.electric_utility
+    ON cleaning.vehicle.electric_utility_id = cleaning.electric_utility.id
+group by cleaning.electric_utility.name
+ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC
+LIMIT 8;
+
+
+-- Los 15 autos con precio de mercado sugerido más altos
+SELECT DISTINCT cleaning.vehicle_details.make,
+                cleaning.vehicle_details.model,
+                cleaning.vehicle_details.model_year,
+                cleaning.vehicle_details.basemsrp
+FROM cleaning.vehicle
+INNER JOIN cleaning.vehicle_details
+    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
+WHERE cleaning.vehicle_details.basemsrp != 0.00
+ORDER BY cleaning.vehicle_details.basemsrp DESC
+LIMIT 15;

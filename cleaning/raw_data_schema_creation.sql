@@ -11,7 +11,7 @@ CREATE SCHEMA IF NOT EXISTS raw;
 DROP TABLE IF EXISTS raw.vehicle_data;
 CREATE TABLE raw.vehicle_data (
     vin VARCHAR(10),                        -- Ejemplo: JTMAB3FV3P
-    country VARCHAR(50),                    -- Ejemplo: Kitsap
+    county VARCHAR(50),                    -- Ejemplo: Kitsap
     city VARCHAR(50),                       -- Ejemplo: Seabeck
     state VARCHAR(2),                       -- Ejemplo: WA
     postal_code VARCHAR(10),                -- Ejemplo: 98380
@@ -33,7 +33,7 @@ CREATE TABLE raw.vehicle_data (
 -- \copy raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM '/Users/carlitos73/Documents/ITAM/Cuarto_Semestre/Bases_de_Datos/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 
 -- Ingresar los datos en Windows
-COPY raw.vehicle_data (vin, country, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM 'D:/PABLO/ITAM/Materias 4 Semestre/Bases de Datos/Proyecto Final/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+COPY raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM 'D:/PABLO/ITAM/Materias 4 Semestre/Bases de Datos/Proyecto Final/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 
 -- Por una razón desconocida el default no coloca las tuplas nulas con en valor por defecto
 -- Es necesario ejecutar las siguientes linear para que se realicen los cambios
@@ -50,7 +50,17 @@ DELETE FROM raw.vehicle_data WHERE raw.vehicle_data.dol_vehicle_id = 159850029;
 DELETE FROM raw.vehicle_data WHERE raw.vehicle_data.dol_vehicle_id = 477613216;
 
 -- 205,436 tuplas deben de ser afectadas
-SELECT * FROM raw.vehicle_data;
+SELECT * FROM raw.vehicle_data
+
+
+-- Vehicle type
+    -- Battery Electric Vehicle (BEV)
+    -- Plug-in Hybrid Electric Vehicle (PHEV)
+
+-- CAFV
+    -- Clean Alternative Fuel Vehicle Eligible
+    -- Eligibility unknown as battery range has not been researched
+    -- Not eligible due to low battery range
 
 -- Para seleccionar un dato de tipo POINT como coordenadas de texto se debe hacer de la sigueinte manera:
 -- SELECT ST_AsText(vehicle_location) FROM raw.vehicle_data;
