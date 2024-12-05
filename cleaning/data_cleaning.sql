@@ -1,5 +1,26 @@
--- Se requiere de la extensión PostGIS para poder guardar datos de tipo POINT como coordenadas
--- el proceso de su isntalación está especificado en raw_data_schema_creation.sql
+-- Dado que en la base de datos normalizada no se consideran los atributos VIN y census_track
+-- no serán revisados para limpieza.
+
+-- .: LIMPIEZA DE LOS DATOS :.
+
+-- Colocamos un default a todos los valores que habíamos encontrado como nulls
+UPDATE raw.vehicle_data SET legislative_district = '-' WHERE legislative_district IS NULL;
+UPDATE raw.vehicle_data SET vehicle_location = ST_SetSRID(ST_MakePoint(0, 0), 4326) WHERE vehicle_location IS NULL;
+UPDATE raw.vehicle_data SET range = 0 WHERE range IS NULL;
+UPDATE raw.vehicle_data SET baseMSRP = 0.00 WHERE baseMSRP IS NULL;
+UPDATE raw.vehicle_data SET model = '-' WHERE model IS NULL;
+
+
+-- Eliminamos todos los espacios inncesarios y colocamos todos los textos en mayúsculas
+UPDATE raw.vehicle_data SET electric_utility = TRIM(UPPER(electric_utility));
+UPDATE raw.vehicle_data SET postal_code = TRIM(postal_code);
+UPDATE raw.vehicle_data SET county = TRIM(UPPER(county));
+UPDATE raw.vehicle_data SET state = TRIM(UPPER(state));
+UPDATE raw.vehicle_data SET legislative_district = TRIM(legislative_district);
+UPDATE raw.vehicle_data SET model = TRIM(UPPER(model));
+UPDATE raw.vehicle_data SET make = TRIM(UPPER(make));
+UPDATE raw.vehicle_data SET vehicle_type = TRIM(UPPER(vehicle_type));
+UPDATE raw.vehicle_data SET cafv = TRIM(UPPER(cafv));
 
 
 
@@ -109,71 +130,33 @@ LEFT JOIN cleaning.vehicle_details vd
     AND rv.basemsrp = vd.baseMSRP
     AND rv.vehicle_type = vd.vehicle_type;
 
--- Comprobar que los datos se agregaron de manera correcta (205,436 tuplas)
-SELECT * FROM cleaning.vehicle;
+
+SELECT * FROM cleaning.vehicle
 
 
 
 
 
 
--- Cantidad de vehículos registrados por año
-SELECT cleaning.vehicle_details.model_year,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.vehicle_details
-    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
-group by cleaning.vehicle_details.model_year
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
 
 
--- Cantidad de vehículos registrados por condado en Washington
-SELECT cleaning.location.county,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.location
-    ON cleaning.vehicle.location_id = cleaning.location.id
-    AND cleaning.location.state = 'WA'
-GROUP BY cleaning.location.county
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
 
 
--- Top 10 de fabricantes segun la autonomía de  com mayor autonomía
-WITH vehiculosRankeados AS (
-    SELECT cleaning.vehicle_details.make,
-           cleaning.vehicle_details.model,
-           cleaning.vehicle_details.model_year,
-           cleaning.vehicle_details.range,
-           RANK() OVER (PARTITION BY make ORDER BY cleaning.vehicle_details.range DESC) AS rank
-    FROM cleaning.vehicle_details
-)
-
-SELECT DISTINCT(make), model, model_year, range
-FROM vehiculosRankeados
-WHERE rank = 1
-ORDER BY range DESC
-LIMIT 10;
 
 
--- Top 8 compañías de electricidad con mayor cantidad de vehículos asignados
-SELECT cleaning.electric_utility.name,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.electric_utility
-    ON cleaning.vehicle.electric_utility_id = cleaning.electric_utility.id
-group by cleaning.electric_utility.name
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC
-LIMIT 8;
 
 
--- Los 15 autos con precio de mercado sugerido más altos
-SELECT DISTINCT cleaning.vehicle_details.make,
-                cleaning.vehicle_details.model,
-                cleaning.vehicle_details.model_year,
-                cleaning.vehicle_details.basemsrp
-FROM cleaning.vehicle
-INNER JOIN cleaning.vehicle_details
-    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
-WHERE cleaning.vehicle_details.basemsrp != 0.00
-ORDER BY cleaning.vehicle_details.basemsrp DESC
-LIMIT 15;
+
+
+
+
+
+-- Como la tabla normalizada contiene una entidad "location" decidimos
+-- eliminar las tuplas con estos datos faltantes ya que casi no aportan información.
+-- 3 tuplas deben de ser eliminadas
+DELETE FROM raw.vehicle_data
+WHERE raw.vehicle_data.dol_vehicle_id IN (
+    SELECT dol_vehicle_id
+    FROM raw.vehicle_data
+    WHERE postal_code IS NULL
+);
