@@ -27,13 +27,14 @@ CREATE TABLE raw.vehicle_data (
     vehicle_type VARCHAR(100),              -- Ejemplo: Plug-in Hybrid Electric Vehicle (PHEV)
     CAFV VARCHAR(100),                      -- Ejemplo: Clean Alternative Fuel Vehicle Eligible
     range SMALLINT,                         -- Ejemplo: 42
-    baseMSRP NUMERIC(10,2),                 -- Ejemplo: 36,000.5
+    baseMSRP BIGINT,                        -- Ejemplo: 36,000
     legislative_district VARCHAR(2),        -- Ejemplo: 35
     dol_vehicle_id BIGINT PRIMARY KEY,      -- Ejemplo: 240684006
     vehicle_location GEOMETRY(Point, 4326), -- Ejemplo: POINT (-122.8728334 47.5798304)
     electric_utility TEXT,                  -- Ejemplo: PUGET SOUND ENERGY INC
     census_tract VARCHAR(12)                -- Ejemplo: 53035091301
 );
+
 
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 -- INSERCIÓN DE LOS DATOS EN LA TABLA RAW
@@ -47,9 +48,12 @@ CREATE TABLE raw.vehicle_data (
 -- WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 
 -- Windows (Pablo)
--- COPY raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract)
--- FROM 'D:/PABLO/ITAM/Materias 4 Semestre/Bases de Datos/Proyecto Final/Electric_Vehicle_Population_Data.csv'
--- WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+COPY raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract)
+FROM 'D:/PABLO/ITAM/Materias 4 Semestre/Bases de Datos/Proyecto Final/Electric_Vehicle_Population_Data.csv'
+WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+
+-- Comprobamos que los datos se ingresaron de manera correcta (205,439 tuplas)
+SELECT * FROM raw.vehicle_data;
 
 
 
