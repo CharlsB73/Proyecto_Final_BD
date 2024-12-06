@@ -319,24 +319,3 @@ LEFT JOIN vehicle_details_complete_table vd
     AND cl.vehicle_type = vd.vehicle_type
     AND cl.range = vd.range
     AND cl.basemsrp = vd.basemsrp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

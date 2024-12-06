@@ -1,62 +1,123 @@
 -- Cantidad de vehículos registrados por año del modelo
-SELECT cleaning.vehicle_details.model_year,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.vehicle_details
-    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
-group by cleaning.vehicle_details.model_year
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
+SELECT vehicle_details.model_year,
+       COUNT(vehicle.dol_vehicle_id)
+FROM vehicle
+INNER JOIN vehicle_details
+    ON vehicle.vehicle_details_id = vehicle_details.id
+GROUP BY vehicle_details.model_year
+ORDER BY vehicle_details.model_year DESC;
 
 
--- Cantidad de vehículos registrados por condado en Washington
-SELECT cleaning.location.county,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.location
-    ON cleaning.vehicle.location_id = cleaning.location.id
-    AND cleaning.location.state = 'WA'
-GROUP BY cleaning.location.county
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC;
+-- Cantidad de vehículos registrados por condado en Washington (Top 15)
+SELECT geographical_location.county,
+       COUNT(vehicle.*)
+FROM vehicle
+INNER JOIN location
+ON vehicle.location_id = location.id
+INNER JOIN geographical_location
+    ON location.geographical_location_id = geographical_location.id
+    AND geographical_location.state = 'WA'
+GROUP BY geographical_location.county
+ORDER BY COUNT(vehicle.*) DESC
+LIMIT 15;
 
 
--- Top 10 de fabricantes según la autonomía de  com mayor autonomía
+-- Vehículo con mayor autonomía de cada fabricante
 WITH vehiculosRankeados AS (
-    SELECT cleaning.vehicle_details.make,
-           cleaning.vehicle_details.model,
-           cleaning.vehicle_details.model_year,
-           cleaning.vehicle_details.range,
-           RANK() OVER (PARTITION BY make ORDER BY cleaning.vehicle_details.range DESC) AS rank
-    FROM cleaning.vehicle_details
+    SELECT vehicle_details.make,
+           vehicle_details.model,
+           vehicle_details.model_year,
+           vehicle_specs.range,
+           ROW_NUMBER() OVER (PARTITION BY make ORDER BY vehicle_specs.range DESC) AS rank
+    FROM vehicle_details
+    INNER JOIN vehicle_specs
+        ON vehicle_details.vehicle_specs_id = vehicle_specs.id
 )
 
-SELECT DISTINCT(make), model, model_year, range
+SELECT make, model, model_year, range
 FROM vehiculosRankeados
 WHERE rank = 1
-ORDER BY range DESC
+ORDER BY range DESC;
+
+
+-- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados
+SELECT electric_utility.name,
+       COUNT(vehicle.*)
+FROM vehicle
+INNER JOIN electric_utility
+    ON vehicle.electric_utility_id = electric_utility.id
+GROUP BY electric_utility.name
+ORDER BY COUNT(vehicle.*) DESC
 LIMIT 10;
 
 
--- Top 8 compañías de electricidad con mayor cantidad de vehículos asignados
-SELECT cleaning.electric_utility.name,
-       COUNT(cleaning.vehicle.dol_vehicle_id)
-FROM cleaning.vehicle
-INNER JOIN cleaning.electric_utility
-    ON cleaning.vehicle.electric_utility_id = cleaning.electric_utility.id
-group by cleaning.electric_utility.name
-ORDER BY COUNT(cleaning.vehicle.dol_vehicle_id) DESC
-LIMIT 8;
-
-
 -- Los 15 autos con precio de mercado sugerido más altos
-SELECT DISTINCT cleaning.vehicle_details.make,
-                cleaning.vehicle_details.model,
-                cleaning.vehicle_details.model_year,
-                cleaning.vehicle_details.basemsrp
-FROM cleaning.vehicle
-INNER JOIN cleaning.vehicle_details
-    ON cleaning.vehicle.vehicle_details_id = cleaning.vehicle_details.id
-WHERE cleaning.vehicle_details.basemsrp != 0.00
-ORDER BY cleaning.vehicle_details.basemsrp DESC
+SELECT DISTINCT vehicle_details.make,
+                vehicle_details.model,
+                vehicle_details.model_year,
+                vehicle_specs.basemsrp
+FROM vehicle
+INNER JOIN vehicle_details
+    ON vehicle.vehicle_details_id = vehicle_details.id
+INNER JOIN vehicle_specs
+    ON vehicle_details.vehicle_specs_id = vehicle_specs.id
+    AND vehicle_specs.basemsrp != 0.00
+ORDER BY vehicle_specs.basemsrp DESC
 LIMIT 15;
 
-SELECT DISTINCT cleaning.vehicle_details.make FROM cleaning.vehicle_details;
+
+-- Top 5 distritos legislativos con más autos registrados
+SELECT location.district,
+       COUNT(vehicle.*)
+FROM vehicle
+INNER JOIN location
+ON vehicle.location_id = location.id
+GROUP BY location.district
+ORDER BY COUNT(vehicle.*) DESC
+LIMIT 5;
+
+
+-- Cantidad de vehículos de batería eléctrica vs híbridos
+SELECT vehicle_details.vehicle_type,
+       COUNT(vehicle.*)
+FROM vehicle
+INNER JOIN vehicle_details
+    ON vehicle.vehicle_details_id = vehicle_details.id
+GROUP BY vehicle_details.vehicle_type
+ORDER BY COUNT(vehicle.*) DESC;
+
+
+-- Proveedor eléctrico con más vehículos registrados por ciudad
+WITH tarifasRankeadas AS (
+    SELECT geographical_location.city,
+        electric_utility.name AS proveedor_electrico,
+        COUNT(vehicle.dol_vehicle_id) AS cantidad_vehiculos,
+        RANK() OVER (PARTITION BY geographical_location.city ORDER BY COUNT(vehicle.dol_vehicle_id) DESC) AS rank
+    FROM vehicle
+    INNER JOIN location
+        ON vehicle.location_id = location.id
+    INNER JOIN geographical_location
+        ON location.geographical_location_id = geographical_location.id
+    INNER JOIN electric_utility
+        ON vehicle.electric_utility_id = electric_utility.id
+    GROUP BY geographical_location.city, electric_utility.name
+)
+
+SELECT city,
+    proveedor_electrico,
+    cantidad_vehiculos
+FROM tarifasRankeadas
+WHERE rank = 1
+ORDER BY city;
+
+
+-- Cantidad de vehículos elegibles para combustible alternativo limpio
+SELECT vehicle_specs.cafv,
+       COUNT(vehicle.*)
+FROM vehicle
+INNER JOIN vehicle_details
+    ON vehicle.vehicle_details_id = vehicle_details.id
+INNER JOIN vehicle_specs
+    ON vehicle_details.vehicle_specs_id = vehicle_specs.id
+GROUP BY vehicle_specs.cafv
+ORDER BY COUNT(vehicle.*) DESC;
