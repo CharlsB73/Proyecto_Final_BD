@@ -465,10 +465,11 @@ Existe una diferencia abismal entre los coches registrados de SKAGIT y los regis
 
 #### _3.- Vehículo con mayor autonomía de cada fabricante (Top 10)_
 ![Q3](img/query3.png "Gráfica 3") 
-Podemos observar un nivel de autonomía muy similar para las primeras marcas. Sin embargo, la cotizada marca BMW se encuentra bastante por detrás de Tesla, el competidor más fuerte en la actualidad para coches eléctricos.
+Podemos observar un nivel de autonomía muy similar para las primeras marcas. Sin embargo, la cotizada marca BMW se encuentra resagada en comparacion a Tesla, el competidor más fuerte en la actualidad para coches eléctricos.
 
 #### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
 ![Q4](img/query4.png "Gráfica 4") 
+
 
 #### _5.- Los 10 autos con precio de mercado sugerido más altos_
 ![Q5](img/query5.png "Gráfica 5") 
@@ -487,7 +488,7 @@ Podemos observar un nivel de autonomía muy similar para las primeras marcas. Si
 
 
 ## Estructura del proyecto
-
+```
 ├── .idea                                        <- General default archives
 ├── Project                                      
 │   ├── data_analysis.sql                           <- SQL querys for data analysis
@@ -497,3 +498,4 @@ Podemos observar un nivel de autonomía muy similar para las primeras marcas. Si
 ├── data                                         <- Link to data download
 ├── img                                          <- Images used for README.md
 ├── README.md                                    <- The README for developers using this project.
+```
