@@ -6,10 +6,15 @@ Subida del proyecto final elaborado en DataGrip
    1. [Integrantes del equipo](#integrantes-del-equipo)
    1. [Introducción](#introducción)
    1. [Problema a estudiar](#problema-a-estudiar)
-   1. [Descripción de los datos](#descripción-de-los-datos)
-1. [Configuración](#configuración)
+   1. [Descripción de los datos y procesamiento](#descripción-de-los-datos)
+1. [Configuración y proyecto](#configuración)
    1. [DataGrip y requerimientos](#datagrip-y-requerimientos)
    1. [Base de datos](#base-de-datos)
+      1. [Carga inicial](#carga-inicial)
+      1. [Análisis preliminar](#análisis-preliminar)
+      1. [Limpieza de datos](#limpieza-de-datos)
+      1. [Análisis de datos](#análisis-de-datos)
+      1. [Conclusión](#conclusión)
 1. [Estructura del proyecto](#estructura-del-proyecto)
 
 ## Proyecto
