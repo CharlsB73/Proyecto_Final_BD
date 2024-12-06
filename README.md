@@ -167,7 +167,100 @@ Se debe ejecutar el comando `\copy raw.vehicle_data (vin, county, city, state, p
 #### Análisis preliminar
 Se recomienda seguir el archivo sql llamado `raw_data_exploration` para mayor comprensión. Consultar la carpeta `Project`donde está guardado este archivo.
 
-d
+En primera instancia, se analizó la unicidad de todas las llaves para así considerar candidatos para llaves primarias de las entidades. Por ejemplo:
+```
+-- ¿El código postal es único? R: NO
+SELECT COUNT(DISTINCT postal_code) FROM raw.vehicle_data;
+
+
+-- ¿El VIN es único? R: NO
+SELECT COUNT(DISTINCT vin) FROM raw.vehicle_data;
+
+
+-- ¿El census track es único? R: NO
+SELECT COUNT(DISTINCT census_tract) FROM raw.vehicle_data;
+```
+
+Es importante notar que la normalización se fue adaptando a los resultados obtenidos de los querys ejecutados durante esta etapa inicial de análisis. A continuación, se elaboraron distintos querys que permiten conocer más a fondo la naturaleza y organización de los datos que se tomarán en cuenta durante la limpieza de datos. Se presentan los siguientes ejemplos:
+
+```
+-- ¿Para todos los registros fuera de Washington la compañía eléctrica es "NON WASHINGTON
+-- STATE ELECTRIC UTILITY"? R: NO
+SELECT DISTINCT electric_utility
+FROM raw.vehicle_data
+WHERE state <> 'WA';
+
+
+-- ¿Qué años abarcan los modelos de los vehículos?
+SELECT DISTINCT model_year FROM raw.vehicle_data ORDER BY model_year;
+-- 1997, 1999, 2000, 2002, 2003, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
+-- 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+
+-- ¿Qué tan común es que un vehículo no tenga MSRP?
+-- R: La gran mayoría de los vehículos no tienen MSRP
+SELECT basemsrp, COUNT(dol_vehicle_id)
+FROM raw.vehicle_data
+group by basemsrp;
+
+-- Nos damos cuenta que solo los vehículos que no tienen código postal contienen los atributos
+-- county, city, state, census_track y electric_utility como nulos, para todas las demás tuplas no son NULL.
+SELECT * FROM raw.vehicle_data
+WHERE county IS NULL
+   OR city IS NULL
+   OR state IS NULL
+   OR census_tract IS NULL
+   OR electric_utility IS NULL;
+
+-- Además de estos 3 atributos que no son nulos comprobamos para los demás
+SELECT make FROM raw.vehicle_data WHERE make IS NULL;                                   -- NO hay NULLs
+SELECT model_year FROM raw.vehicle_data WHERE model_year IS NULL;                       -- NO hay NULLs
+SELECT vehicle_type FROM raw.vehicle_data WHERE vehicle_type IS NULL;                   -- NO hay NULLs
+SELECT cafv FROM raw.vehicle_data WHERE cafv IS NULL;                                   -- NO hay NULLs
+SELECT legislative_district FROM raw.vehicle_data WHERE legislative_district IS NULL;   -- SÍ hay NULLs
+SELECT vehicle_location FROM raw.vehicle_data WHERE vehicle_location IS NULL;           -- SÍ hay NULLs
+SELECT range FROM raw.vehicle_data WHERE range IS NULL;                                 -- SÍ hay NULLs
+SELECT basemsrp FROM raw.vehicle_data WHERE basemsrp IS NULL;                           -- SÍ hay NULLs
+SELECT model FROM raw.vehicle_data WHERE model IS NULL;                                 -- SÍ hay NULLs
+```
+
+Para verificar que las dependencias funcionales propuestas se cumplieran, fue necesario elaborar querys que permitieran saber si el ó los determinantes X regresaran o no más de una Y. En dado caso que el query regresara algún valor, se puede concluir que la dependencia no se cumple porque un determinante X no identifica únicamente a un determinado Y. Ejemplos:
+
+```
+-- Se cumple la dependencia {VIN} -> {model_year, make, model}
+SELECT vin,
+       COUNT(DISTINCT model_year),
+       COUNT(DISTINCT make),
+       COUNT(DISTINCT model)
+FROM raw.vehicle_data
+GROUP BY vin
+HAVING COUNT(DISTINCT model_year) > 1
+OR COUNT(DISTINCT make) > 1
+OR COUNT(DISTINCT model) > 1
+AND vin IS NOT NULL;
+
+-- Se cumple la dependencia {postal_code} -> {vehicle_location} para la tabla postal_mapping
+SELECT postal_code, COUNT(DISTINCT vehicle_location)
+FROM raw.vehicle_data
+GROUP BY postal_code
+HAVING COUNT(DISTINCT vehicle_location) > 1
+AND postal_code IS NOT NULL;
+
+-- No se cumple la dependencia {census_tract} -> {postal_code}
+SELECT census_tract,
+       COUNT(DISTINCT postal_code)
+FROM raw.vehicle_data
+GROUP BY census_tract
+HAVING COUNT(DISTINCT postal_code) > 1
+AND  census_tract IS NOT NULL;
+
+-- No se cumple la dependencia {city} -> {county} para la tabla geographical_location
+SELECT city, COUNT(DISTINCT county)
+FROM raw.vehicle_data
+GROUP BY city
+HAVING COUNT(DISTINCT county) > 1
+AND city IS NOT NULL;
+```
+
 
 #### Limpieza de datos
 
