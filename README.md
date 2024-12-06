@@ -485,4 +485,12 @@ Con los datos limpios, fue pertinente hacer un análisis profundo con consultas 
 
 ## Estructura del proyecto
 
-
+├── .idea                                        <- General default archives
+├── Project                                      
+│   ├── data_analysis.sql                           <- SQL querys for data analysis
+│   ├── data_cleaning.sql                           <- Deep data processing, 4NF format
+│   ├── raw_data_exploration.sql                    <- Initial analysis with raw data
+│   └── raw_data_schema_creation.sql                <- First schema creation and data processiong
+├── data                                         <- Link to data download
+├── img                                          <- Images used for README.md
+├── README.md                                    <- The README for developers using this project.
