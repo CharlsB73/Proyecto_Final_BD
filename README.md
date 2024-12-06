@@ -122,7 +122,7 @@ Se tomarán como claves únicas de las entidades el VIN y el Código Postal, est
 
 
 ### DataGrip y requerimientos
-
+Para realizar el proyecto, se necesita tener instalado la versión 2024.3 de DataGrip. Se puede descargar en la [página oficial de jetbrains](https://www.jetbrains.com/datagrip/whatsnew/)
 
 ### Base de datos
 
