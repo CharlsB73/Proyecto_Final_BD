@@ -469,22 +469,28 @@ Podemos observar un nivel de autonomía muy similar para las primeras marcas. Si
 
 #### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
 ![Q4](img/query4.png "Gráfica 4") 
+Bonneville Power Administration ha logrado asignar un gran porcentaje de vehículos en distintos estados. Junto a Puget Sound Energy Inc, estas 2 son los líderes eléctricos de Washington.
 
 
 #### _5.- Los 10 autos con precio de mercado sugerido más altos_
 ![Q5](img/query5.png "Gráfica 5") 
+A pesar de no formar parte de los pioneros en vehículos eléctricos, Porsche sí forma parte de las marcas con precio de mercado por encima del promedio, superando a Tesla y a BMW.
 
 #### _6.- Top 5 distritos legislativos con más autos registrados_
 ![Q6](img/query6.png "Gráfica 6") 
+Estos son los distritos que más autos registrados. Aunque debe realizarse un estudio más profundo, los datos sugieren que un buen porcentaje de coches registrados en estos estados son modelos KING.
 
 #### _7.- Cantidad de vehículos de batería eléctrica vs híbridos (Top 10)_
 ![Q7](img/query7.png "Gráfica 7") 
+Los coches eléctricos abundan y superan a la cantidad actual registrada de coches híbridos. Ante tales números, es posible que exista una disminución en precios del mercado para vehículos de marcas especializadas en baterías híbridas.
 
 #### _8.- Proveedor eléctrico con más vehículos registrados por ciudad (Top 10)_
 ![Q8](img/query8.png "Gráfica 8") 
+ABERDEEN y AIRWAY HEIGHTS han impedido a otros proveedores distribuir la alta demanda de vehiculos con baterías eléctricas o híbridas. 
 
 #### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio (Top 10)_
 ![Q9](img/query9.png "Gráfica 9") 
+Sorprendentemente, la considerable cantidad de coches registrados como híbridos o eléctricos no es totalmente elegible para ser considerada como de uso alternativo limpio. No se tienen más datos para analizar, pero esta conclusión podría significar que una buena parte de las marcas no adopta buenos modelos renovables a sus diseños automotrices.
 
 
 ## Estructura del proyecto
