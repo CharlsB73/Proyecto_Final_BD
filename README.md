@@ -502,6 +502,11 @@ ABERDEEN y AIRWAY HEIGHTS han impedido a otros proveedores distribuir la alta de
 ![Q9](img/query9.png "Gráfica 9") 
 Sorprendentemente, la considerable cantidad de coches registrados como híbridos o eléctricos no es totalmente elegible para ser considerada como de uso alternativo limpio. No se tienen más datos para analizar, pero esta conclusión podría significar que una buena parte de las marcas no adopta buenos modelos renovables a sus diseños automotrices.
 
+#### Conclusión:
+
+Este proyecto de análisis y normalización de la base de datos de vehículos eléctricos en el estado de Washington nos permitió abordar de manera integral los retos asociados con la gestión eficiente de datos. Al aplicar procesos de limpieza y normalización, eliminamos redundancias y aseguramos la integridad de los datos, lo que no solo optimizó la estructura de la base sino que también garantizó un conjunto de datos confiable para análisis posteriores. La creación de relaciones significativas entre las entidades y la reestructuración de tablas innecesarias en busca de un balance entre normalización y eficiencia práctica demuestran el valor de una base de datos bien diseñada.
+
+El análisis de los datos limpios reveló patrones importantes, como la abundante distribucion de vehículos eléctricos en los condados más urbanizados por parte de pocos proveedores y un incremento en el uso de vehículos eléctricos a lo largo de los últimos años. Estos hallazgos no solo destacan las áreas donde la transición a vehículos eléctricos es más acelerada, sino que también ofrecen insights valiosos para futuras políticas públicas, como incentivos fiscales o infraestructura de carga. Este trabajo subraya la importancia de mantener un enfoque ético al manejar información sensible, garantizando que el uso de datos respete la privacidad y beneficie a la sociedad en su transición hacia tecnologías más sostenibles.
 
 ## Estructura del proyecto
 ```
