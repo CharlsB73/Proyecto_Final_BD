@@ -453,16 +453,19 @@ LEFT JOIN vehicle_details_complete_table vd
 #### Análisis de datos
 
 ##### Nota: para ver los querys completos, consultar el archivo `data_analysis.sql`
-Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y su interpretación:
+Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y una breve descripción:
 
 #### _1.- Cantidad de vehículos registrados por año del modelo (Top 10)_
 ![Q1](img/query1.png "Gráfica 1") 
+Es claro que 2023 fue el año en el que más coches se registraron, casi doblando en cantidad al año actual 2024
 
 #### _2.- Cantidad de vehículos registrados por condado en Washington (Top 10)_
 ![Q2](img/query2.png "Gráfica 2") 
+Existe una diferencia abismal entre los coches registrados de SKAGIT y los registrados de KING dentro de Washington. Si bien es cierto que SKAGIT se mantuvo cercano a sus competidores más próximos, KING ha dominado el mercado hasta el último corte de estos datos.
 
 #### _3.- Vehículo con mayor autonomía de cada fabricante (Top 10)_
 ![Q3](img/query3.png "Gráfica 3") 
+Podemos observar un nivel de autonomía muy similar para las primeras marcas. Sin embargo, la cotizada marca BMW se encuentra bastante por detrás de Tesla, el competidor más fuerte en la actualidad para coches eléctricos.
 
 #### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
 ![Q4](img/query4.png "Gráfica 4") 
