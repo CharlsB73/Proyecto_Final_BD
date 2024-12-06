@@ -456,31 +456,31 @@ LEFT JOIN vehicle_details_complete_table vd
 Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y su interpretación:
 
 #### _1.- Cantidad de vehículos registrados por año del modelo (Top 10)_
-
+![Q1](img/query1.png "Gráfica 1") 
 
 #### _2.- Cantidad de vehículos registrados por condado en Washington (Top 10)_
-
+![Q2](img/query2.png "Gráfica 2") 
 
 #### _3.- Vehículo con mayor autonomía de cada fabricante (Top 10)_
-
+![Q3](img/query3.png "Gráfica 3") 
 
 #### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
-
+![Q4](img/query4.png "Gráfica 4") 
 
 #### _5.- Los 10 autos con precio de mercado sugerido más altos_
-
+![Q5](img/query5.png "Gráfica 5") 
 
 #### _6.- Top 5 distritos legislativos con más autos registrados_
-
+![Q6](img/query6.png "Gráfica 6") 
 
 #### _7.- Cantidad de vehículos de batería eléctrica vs híbridos (Top 10)_
-
+![Q7](img/query7.png "Gráfica 7") 
 
 #### _8.- Proveedor eléctrico con más vehículos registrados por ciudad (Top 10)_
-
+![Q8](img/query8.png "Gráfica 8") 
 
 #### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio (Top 10)_
-
+![Q9](img/query9.png "Gráfica 9") 
 
 
 ## Estructura del proyecto
