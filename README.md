@@ -19,8 +19,14 @@ Subida del proyecto final elaborado en DataGrip
 * [Pablo Ernesto Gómez](https://github.com/Pabo-0)
 
 
-
 ### Introducción
+Durante el análisis y procesamiento de la base de datos de vehículos eléctricos en el estado de Washington, surgen varios desafíos que requieren atención para garantizar la calidad y utilidad del conjunto de datos. En primer lugar, la estructura actual de los datos presenta redundancias significativas, como registros duplicados de fabricantes o modelos debido a inconsistencias en la entrada de datos. Esto complica la agrupación y el análisis, haciendo necesario implementar un proceso de normalización que elimine estas redundancias y reorganice las tablas para cumplir con las formas normales, asegurando que cada atributo dependa exclusivamente de su clave principal.
+Otro problema crítico es la presencia de valores faltantes en atributos importantes como el tipo de carga o la ubicación. Estos vacíos en los datos pueden sesgar el análisis, dificultando la identificación de patrones en la adopción de vehículos eléctricos. Además, es necesario manejar datos erróneos, como ubicaciones mal georreferenciadas o valores inconsistentes en el tipo de carga. Por ejemplo, se han detectado registros donde el mismo modelo de vehículo aparece asociado a diferentes tipos de carga, lo que afecta la confiabilidad del análisis.
+Finalmente, es esencial diseñar un esquema que facilite la exploración de factores clave en la adopción de vehículos eléctricos. Esto incluye analizar las tendencias de registro por fabricante y modelo, la distribución geográfica de los vehículos y la relación entre la infraestructura de carga y la densidad de registros. Estos problemas forman el núcleo del proyecto y su resolución será fundamental para extraer conclusiones útiles que puedan informar decisiones sobre la promoción de esta tecnología en el estado.
+El estudio de una base de datos relacionada con vehículos eléctricos en el estado de Washington también plantea importantes implicaciones éticas que deben ser consideradas. Dado que los datos pueden incluir información sensible, como ubicaciones geográficas específicas o detalles sobre usuarios particulares, es fundamental garantizar la protección de la privacidad y la seguridad de los datos recopilados. Esto implica adherirse a normativas como el Reglamento General de Protección de Datos (GDPR) o leyes locales de privacidad, evitando cualquier uso indebido o exposición de datos personales. Además, el análisis debe ser transparente y responsable, evitando sesgos que puedan derivar en decisiones perjudiciales para ciertos grupos o regiones. Por ejemplo, al identificar factores clave en la adopción de vehículos eléctricos, es crucial no discriminar contra comunidades con menor acceso a recursos o infraestructura, garantizando que los hallazgos se utilicen para promover la equidad y el desarrollo inclusivo de esta tecnología.
+
+### Problema a estudiar
+
 Durante el análisis y procesamiento de la base de datos de vehículos eléctricos en el estado de Washington, surgen varios desafíos que requieren atención para garantizar la calidad y utilidad del conjunto de datos. En primer lugar, la estructura actual de los datos presenta redundancias significativas, como registros duplicados de fabricantes o modelos debido a inconsistencias en la entrada de datos. Esto complica la agrupación y el análisis, haciendo necesario implementar un proceso de normalización que elimine estas redundancias y reorganice las tablas para cumplir con las formas normales, asegurando que cada atributo dependa exclusivamente de su clave principal.
 Otro problema crítico es la presencia de valores faltantes en atributos importantes como el tipo de carga o la ubicación. Estos vacíos en los datos pueden sesgar el análisis, dificultando la identificación de patrones en la adopción de vehículos eléctricos. Además, es necesario manejar datos erróneos, como ubicaciones mal georreferenciadas o valores inconsistentes en el tipo de carga. Por ejemplo, se han detectado registros donde el mismo modelo de vehículo aparece asociado a diferentes tipos de carga, lo que afecta la confiabilidad del análisis.
 Finalmente, es esencial diseñar un esquema que facilite la exploración de factores clave en la adopción de vehículos eléctricos. Esto incluye analizar las tendencias de registro por fabricante y modelo, la distribución geográfica de los vehículos y la relación entre la infraestructura de carga y la densidad de registros. Estos problemas forman el núcleo del proyecto y su resolución será fundamental para extraer conclusiones útiles que puedan informar decisiones sobre la promoción de esta tecnología en el estado.
@@ -165,7 +171,7 @@ CREATE TABLE raw.vehicle_data (
 Se debe ejecutar el comando `\copy raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM 'ubicación_de_los_datos' WITH (FORMAT CSV, HEADER true, DELIMITER ',');` después de crear el esquema `raw`y crear la tabla `vehicle_data`
 
 #### Análisis preliminar
-Se recomienda seguir el archivo sql llamado `raw_data_exploration` para mayor comprensión. Consultar la carpeta `Project`donde está guardado este archivo.
+Se recomienda seguir el archivo sql llamado `raw_data_exploration.sql` para mayor comprensión. Consultar la carpeta `Project`donde está guardado este archivo.
 
 En primera instancia, se analizó la unicidad de todas las llaves para así considerar candidatos para llaves primarias de las entidades. Por ejemplo:
 ```
@@ -261,13 +267,220 @@ HAVING COUNT(DISTINCT county) > 1
 AND city IS NOT NULL;
 ```
 
-
 #### Limpieza de datos
+
+Gracias al análisis llevado a cabo en el esquema raw se pudieron formas conclusiones importantes para generar la limpieza de datos. Por ejemplo, se detectaron datos anómalos que solo tenían un dato de información irrelevante, atributos con nombres largos, precios de venta contrarios, entre otros. Para iniciar con la limpieza, se creó un nuevo esquema y una tabla responsable de almacenar los datos a limpiar:
+
+```
+-- Cereación del esquema
+-- Ya no incluirmeos los atributos VIN y census_track pues estos serán desechados
+DROP SCHEMA IF EXISTS cleaning CASCADE;
+CREATE SCHEMA IF NOT EXISTS cleaning;
+
+DROP TABLE IF EXISTS cleaning.vehicle_data;
+CREATE TABLE cleaning.vehicle_data (
+    county VARCHAR(50),
+    city VARCHAR(50),
+    state VARCHAR(2),
+    postal_code VARCHAR(10),
+    model_year SMALLINT,
+    make VARCHAR(50),
+    model VARCHAR(50),
+    vehicle_type VARCHAR(100),
+    CAFV VARCHAR(100),
+    range SMALLINT,
+    baseMSRP BIGINT,
+    legislative_district VARCHAR(2),
+    dol_vehicle_id BIGINT PRIMARY KEY,
+    vehicle_location GEOMETRY(Point, 4326),
+    electric_utility TEXT
+);
+```
+
+Después, siguió la limpieza de formato del texto:
+
+```
+-- Como parte de la limpieza los atributos de tipo texto serán puestos en mayúsculas y sin espacios innecesarios
+INSERT INTO cleaning.vehicle_data
+SELECT TRIM(UPPER(county)),
+       TRIM(UPPER(city)),
+       TRIM(UPPER(state)),
+       TRIM(UPPER(postal_code)),
+       model_year,
+       TRIM(UPPER(make)),
+       TRIM(UPPER(model)),
+       TRIM(UPPER(vehicle_type)),
+       TRIM(UPPER(CAFV)),
+       range,
+       baseMSRP,
+       TRIM(UPPER(legislative_district)),
+       dol_vehicle_id,
+       TRIM(UPPER(vehicle_location)),
+       TRIM(UPPER(electric_utility))
+FROM raw.vehicle_data;
+
+
+```
+Luego, la limpieza formal donde se definen `DEFAULT`, eliminación sustitución de datos. Se presentan algunos ejemplos. Se puede ver la limpieza completa en `raw_cleaning.sql`:
+
+```
+-- Como la tabla normalizada contiene una entidad "location" que depende del código postal para su información
+-- eliminaremos las tuplas con este deato faltante, pues estas tuplas no aportan información útil.
+-- 3 tuplas deben de ser eliminadas
+DELETE FROM cleaning.vehicle_data
+WHERE cleaning.vehicle_data.dol_vehicle_id IN (
+    SELECT dol_vehicle_id
+    FROM cleaning.vehicle_data
+    WHERE postal_code IS NULL
+);
+
+-- Colocamos un default a todos los valores que habíamos encontrado como nulls
+-- Decidimos usar el valor '-' ya que en el ordenamiento aparece primero y nos
+-- facilita ver valores faltantes.
+-- Para las coordenadas colocamos como default las (0,0)
+UPDATE cleaning.vehicle_data SET legislative_district = '-' WHERE legislative_district IS NULL;
+UPDATE cleaning.vehicle_data SET vehicle_location = ST_SetSRID(ST_MakePoint(0, 0), 4326) WHERE vehicle_location IS NULL;
+UPDATE cleaning.vehicle_data SET range = 0 WHERE range IS NULL;
+UPDATE cleaning.vehicle_data SET baseMSRP = 0 WHERE baseMSRP IS NULL;
+UPDATE cleaning.vehicle_data SET model = '-' WHERE model IS NULL;
+
+-- Simplificamos los tipos de vehículos a BATTERY ELECTRIC e HYBRID ELECTRIC
+UPDATE cleaning.vehicle_data
+SET vehicle_type = 'BATTERY ELECTRIC'
+WHERE vehicle_type = 'BATTERY ELECTRIC VEHICLE (BEV)';
+
+UPDATE cleaning.vehicle_data
+SET vehicle_type = 'HYBRID ELECTRIC'
+WHERE vehicle_type = 'PLUG-IN HYBRID ELECTRIC VEHICLE (PHEV)';
+
+
+-- Consideramos que un vehículo del mismo fabricante, modelo, año y autonomía debe de tener siempre el
+-- mismo precio sugerido de venta, pues no tinene sentido que este cmabie por cualquiera de los otros atributos.
+-- Ya que los unicos vehículos que entran en este caso solo tienen dos precios de venta sugeridos distintos, el
+-- 0 (no definido) y otro, se tomará ese otro precio como el definido para todos lo demás.
+-- De la exploración de las dependencias sabemos que los vehículos a modificar son los siguientes 3:
+
+UPDATE cleaning.vehicle_data
+SET basemsrp = (
+    SELECT DISTINCT basemsrp
+    FROM cleaning.vehicle_data
+    WHERE model = 'CAYENNE' AND model_year = 2020 AND range = 14
+    AND basemsrp != 0
+)
+WHERE model = 'CAYENNE' AND model_year = 2020 AND range = 14;
+```
+
+Con los datos limpios, se crearon las tablas pertinentes y se insertaron los datos (tomando precación en la inserción de llaves):
+
+```
+-- Tabla para los servicios de electricidad
+-- El id es SERIAL pues no esperamos una gran cantidad de servicios
+DROP TABLE IF EXISTS electric_utility CASCADE;
+CREATE TABLE electric_utility (
+    id SERIAL PRIMARY KEY,
+    name TEXT
+);
+
+
+-- Tabla para el mapeo a través del código postal
+DROP TABLE IF EXISTS postal_mapping CASCADE;
+CREATE TABLE postal_mapping (
+    postal_code VARCHAR(10) PRIMARY KEY,
+    coordinates GEOMETRY(Point, 4326)
+);
+
+
+-- Tabla para la ubicación geográfica de ciudad, condado y estado
+DROP TABLE IF EXISTS geographical_location CASCADE;
+CREATE TABLE geographical_location (
+    id BIGSERIAL PRIMARY KEY,
+    city VARCHAR(50),
+    county VARCHAR(50),
+    state VARCHAR(2)
+);
+...
+
+-- Inserción de los datos de todas las llaves para la tabla de vehículo (205,436 tuplas)
+WITH location_complete_table AS (
+    SELECT location.id,
+           location.postal_code,
+           location.district,
+           geographical_location.city,
+           geographical_location.county
+    FROM public.location
+    INNER JOIN public.geographical_location
+        ON location.geographical_location_id = public.geographical_location.id
+),
+
+vehicle_details_complete_table AS (
+    SELECT public.vehicle_details.id,
+           public.vehicle_details.model,
+           public.vehicle_details.model_year,
+           public.vehicle_details.vehicle_type,
+           public.vehicle_specs.range,
+           public.vehicle_specs.basemsrp
+    FROM public.vehicle_details
+    INNER JOIN public.vehicle_specs
+        ON public.vehicle_details.vehicle_specs_id = public.vehicle_specs.id
+)
+
+INSERT INTO public.vehicle (dol_vehicle_id, vehicle_details_id, location_id, electric_utility_id)
+SELECT DISTINCT
+    cl.dol_vehicle_id,
+    vd.id,
+    loc.id,
+    eu.id
+FROM cleaning.vehicle_data cl
+LEFT JOIN public.electric_utility eu
+    ON cl.electric_utility = eu.name
+LEFT JOIN location_complete_table loc
+    ON cl.postal_code = loc.postal_code
+    AND cl.legislative_district = loc.district
+    AND cl.city = loc.city
+    AND cl.county = loc.county
+LEFT JOIN vehicle_details_complete_table vd
+    ON cl.model = vd.model
+    AND cl.model_year = vd.model_year
+    AND cl.vehicle_type = vd.vehicle_type
+    AND cl.range = vd.range
+    AND cl.basemsrp = vd.basemsrp;
+
+...
+
+```
 
 
 #### Análisis de datos
 
-#### Preguntas a contestar con el modelo
+##### Nota: para ver los querys completos, consultar el archivo `data_analysis.sql`
+Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y su interpretación:
+
+#### _1.- Cantidad de vehículos registrados por año del modelo (Top 10)_
+
+
+#### _2.- Cantidad de vehículos registrados por condado en Washington (Top 10)_
+
+
+#### _3.- Vehículo con mayor autonomía de cada fabricante (Top 10)_
+
+
+#### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
+
+
+#### _5.- Los 10 autos con precio de mercado sugerido más altos_
+
+
+#### _6.- Top 5 distritos legislativos con más autos registrados_
+
+
+#### _7.- Cantidad de vehículos de batería eléctrica vs híbridos (Top 10)_
+
+
+#### _8.- Proveedor eléctrico con más vehículos registrados por ciudad (Top 10)_
+
+
+#### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio (Top 10)_
+
 
 
 ## Estructura del proyecto
