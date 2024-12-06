@@ -122,7 +122,7 @@ Se tomarán como claves únicas de las entidades el VIN y el Código Postal, est
 
 
 ### DataGrip y requerimientos
-Para realizar el proyecto, se necesita tener instalado la versión 2024.3 de DataGrip. Se puede descargar en la [página oficial de jetbrains](https://www.jetbrains.com/datagrip/whatsnew/)
+Para realizar el proyecto, se necesita tener instalado la versión 2024.3 de DataGrip. Se puede descargar en la [página oficial de jetbrains](https://www.jetbrains.com/datagrip/whatsnew/). Además, se tiene que tener instalada la versión 16 de Postgresql; se puede instalar siguiendo las instrucciones de la [página oficial de Postgresql](https://www.postgresql.org/download/). Una vez instalado Postgresql y creado un servidor local con usuario y contraseña, se debe entrar a la terminal de postgresql y ejecutar el comando `CREATE DATABASE vehicle_data;` para crear la base de datos. El resto del proceso se hace en DataGrip. Simplemente se tiene que añadir una fuente de datos del proyecto, se deben ingresar las credenciales pertinentes (usuario, contraseña y nombre de la base de datos a la que se quiere conectar) y crear un nuevo script de SQL.
 
 ### Base de datos
 
