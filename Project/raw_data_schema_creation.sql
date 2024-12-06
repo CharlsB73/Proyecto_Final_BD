@@ -6,7 +6,6 @@
     -- 3) Desplegar la sección de Categorías -> Spatial Extensions -> PostGIS 3.5 y descargar la extensión
     -- 4) Una vez terminada la instalación correr el sigueinte comando: CREATE EXTENSION postgis;
 
-
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 -- CREACIÓN DE LA TABLA RAW
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -43,9 +42,7 @@ CREATE TABLE raw.vehicle_data (
 -- Para Ingresar los datos se debe correr cualqueira de los siguientes 2 comandos cambiando la dirección del archivo
 
 -- Mac (Charly)
--- \copy raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract)
--- FROM '/Users/carlitos73/Documents/ITAM/Cuarto_Semestre/Bases_de_Datos/Electric_Vehicle_Population_Data.csv'
--- WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+--\copy raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract) FROM '/Users/carlitos73/Documents/ITAM/Cuarto_Semestre/Bases_de_Datos/Electric_Vehicle_Population_Data.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 
 -- Windows (Pablo)
 -- COPY raw.vehicle_data (vin, county, city, state, postal_code, model_year, make, model, vehicle_type, CAFV, range, baseMSRP, legislative_district, dol_vehicle_id, vehicle_location, electric_utility, census_tract)
