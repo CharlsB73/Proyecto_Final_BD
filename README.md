@@ -43,7 +43,7 @@ El estudio de una base de datos relacionada con vehículos eléctricos en el est
 ### Descripción de los datos
 
 #### Diseño Original
-La base de datos original cuenta con un total de 17 atributos y 205,440 tuplas. Esta fue extraída de https://catalog.data.gov/dataset/electric-vehicle-population-data. Los datos se pueden descargar en [este link](https://drive.google.com/file/d/1x6AvLlwbXijpxsOf5u0_nZI2Tv-gz1vz/view?usp=share_link).
+La base de datos original cuenta con un total de 17 atributos y 205,439 tuplas. Esta fue extraída de https://catalog.data.gov/dataset/electric-vehicle-population-data. Los datos se pueden descargar en [este link](https://drive.google.com/file/d/1x6AvLlwbXijpxsOf5u0_nZI2Tv-gz1vz/view?usp=share_link).
 
 #### Atributos
 - VIN (0-10): Identificador único del vehículo reducido a solo 10 dígitos. Este puede identificar a todas las tuplas individualmente de manera única.
