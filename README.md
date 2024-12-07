@@ -99,30 +99,30 @@ La base de datos original cuenta con un total de 17 atributos y 205,440 tuplas. 
 {city, county} → {state}
 
 #### Normalización
-La elección del conjunto de entidades de la izquierda en lugar de las de la derecha, aunque estas últimas estén en cuarta forma normal (4FN), se justifica por criterios de eficiencia práctica y diseño lógico de la base de datos, como se detalla a continuación:
+Para el proceso de normalización decidimos realizar un diagrama de enidad-relación para tener una referencia visual sobre como descomponer los atributos. Primero, decidimos basar la normalización en nuestra intuición con ayuda de las dependencias funcionales encontradas. El resultado fue el siguiente:
 
-##### _Simplificación del modelo de datos:_
-Las tablas de la derecha, aunque cumplen con la 4FN, introducen una gran cantidad de tablas con un único atributo (por ejemplo, country_state o city_county). Estas entidades atomizadas complican innecesariamente el diseño de la base de datos y las consultas que operan sobre ellas, incrementando la cantidad de JOINs requeridos para recuperar datos completos. Esto resulta en operaciones más costosas y un mantenimiento más complejo del sistema.
 
-##### _Optimización del rendimiento:_
-El conjunto de entidades de la izquierda combina información relacionada (como location, que incluye postal_code, state, y city) en una única tabla estructurada de manera eficiente. Esto reduce la sobrecarga en el procesamiento de consultas, ya que no es necesario realizar múltiples uniones para obtener información que debería estar agrupada lógicamente. Este diseño balancea la normalización y la eficiencia operativa.
+La entidad "electric_utility" va a identificar a cada compañía de electricidad de Washington, consideramos necesario separar esta información en una sola entidad ya que solo existen una muy pequeña cantidad de compañías en comparación con la enorme cantidad de vehículos registrados, lo que resulta en un desperdicio de memoria por repetición.
 
-##### _Evitar complejidad innecesaria:_
-La atomización de atributos (como en las entidades de la derecha) puede ser útil en escenarios extremadamente específicos, como sistemas distribuidos que requieren minimizar redundancias en conjuntos de datos masivos. Sin embargo, en este caso, no hay evidencia de que esa atomización sea necesaria. Al contrario, un diseño tan fragmentado añade complejidad sin un beneficio claro.
+Para la información del vehículo creamos las entidades "vehicle_specs" y "vehicle_details", la primera contiene las especificaciones de la autonomía, precio de mercado sugerido y si es elegible como combustible limpio; la segunda contienene los detalles del modelo, fabricante, año del modelo y tipo del vehículo. Decidimos separar de esta manera la información para reducir la mayor cantidad de tuplas posibles, esto ya que en general no hay muchas variantes en "vehicles_details" mas que el año del modelo, y para el caso de las especificaciones una gran mayoría de tuplas tiene una autonomía no registrada (0), un precio de mercado sugerido no registrado (0) y un CAFV que solo varía entre 3 opciones, lo que elimina mucha informacion redundadnte reduciendola a un solo ID.
 
-##### _Usabilidad y claridad:_
-Las entidades de la izquierda son más fáciles de interpretar y manipular por los usuarios y desarrolladores. Por ejemplo, tener toda la información de ubicación en una sola tabla (location) permite una comprensión más directa del modelo de datos y hace que la escritura de consultas sea más intuitiva.
+Para la ubicación utilizamos las entidades "location", "postal_mapping" y "geographical_location". Decidimos agrupar de esta manera la información por dos dependencias importantes, la primera es {postal_code} <-> {vehicle_location} y la segunda es {city, county} → {state}, con estas dependencias las entidades "postal_mapping" y "geographical_location" están implicadas por sus llaves, lo cual acerca más a la base de datos a estar en cuarta forma normal. La entidad "location" no es mas que una agrupación de las otras dos entidades junto con el distrito legislativo, atributo para el cual no encontramos ninguna dependencia funcional, lo que complico aislarlo en otra tabla.
 
-##### _Evitar restricciones innecesarias:_
-Crear tablas con un solo atributo (como city_county) puede ser visto como una aplicación excesiva de la normalización, ya que no aporta un beneficio real en la integridad de los datos ni en la reducción de redundancias. Al contrario, introduce restricciones que podrían ser irrelevantes para los requerimientos reales del sistema.
+Por último se tiene la entidad "vehicle" que contiene todos los ID principales de las entidades para la ubicación, detalles del vehículo y compañía de electricidad.
+
+##### _Simplificación del modelo:_
+Tras haber hecho la normalización bajo nuestra intuición procedimos a verificar todas las dependencias funcionales, revisando se estas estaban implicadas por las llaves. Como se puede observar en la imagen existe una dependencia que no cumple con esta condición, la dependencia {model} → {make}. Como proceso de mejora decidimos aplicar el teorema de Heath para descomponer la entidad en dos, con tal de que la relación quede implicada por las llaves, lo que llevo a la creación de la entidad "model_make" siguiente:
+
+
+
+A pesar de que incluyendo esta nueva tabla toda la base de datos alcanzaría la cuarta forma normal, hemos tomado la desición de manener la entidad de los detalles del vehículo como la inicialmente planteada. Nuestro razonamiento detras de esta desición surge por el ploblema de que la nueva entidad sería atómica, es decir que solo tendríamos una nueva entidad para un solo atributo conectado a traves de su llave "make", lo que complica enormemente el análisis de datos y no proporciona una ventaja significativa, incluso podría llegar a ser poco eficiente por el espacio de memoria utilzizado. La atomización de atributos solo puede ser útil en escenarios extremadamente específicos, como sistemas distribuidos que requieren minimizar redundancias en conjuntos de datos masivos. Sin embargo, en este caso, no hay evidencia de que esa atomización sea necesaria. 
 
 ##### _Alineación con los requerimientos del proyecto:_
-En este contexto, el objetivo principal del proyecto es facilitar el análisis y la limpieza de datos sobre vehículos eléctricos. El modelo de la izquierda permite realizar estas tareas de forma más eficiente al mantener una estructura cohesiva y lógica que refleja mejor las relaciones entre los datos del mundo real.
-En resumen, aunque las entidades de la derecha estén en una forma normal más avanzada, su nivel de atomización no era necesario para los objetivos del proyecto y habría introducido complicaciones innecesarias. Por lo tanto, el conjunto de entidades de la izquierda representa un compromiso óptimo entre normalización, claridad y eficiencia operativa.
+En este contexto, el objetivo principal del proyecto es facilitar el análisis y la limpieza de datos sobre vehículos eléctricos. El modelo de los datos inicla permite realizar estas tareas de forma más eficiente al mantener una estructura cohesiva y lógica que refleja mejor las relaciones entre los datos del mundo real. En resumen, aunque con la entidad "model_make" se estaría en cuarta forma normal, su nivel de atomización no es necesario para los objetivos del proyecto pues introduciría complicaciones innecesarias. Por lo tanto, el conjunto de entidades inicial representa un compromiso óptimo entre normalización, claridad y eficiencia operativa.
 
 
-#### Consideraciones
-Se tomarán como claves únicas de las entidades el VIN y el Código Postal, esto porque el DOL no aporta ninguna información relevante para el análisis y por la complejidad de obtener información a través del código censal. Es importante aclarar que aunque no todas las tuplas contienen código postal este se tomará como llave para la entidad de ubicación, pues todas las tablas que contienen los datos de ubicación sí tienen código postal y este devuelve la misma información que se puede obtener del código censal.
+#### _Consideraciones Adicionales_
+Únicamente se tomarán como válida la clave única del DOl, ya que este es el único atributo capaz de identidicar individualmente a todas las tuplas de la base de datos. Como parte de la tabla "postal_mapping" sí se tendrá como llave primaria el código postal, esto por el cumplimiento de su dependencia funcional con la localizaciópn del vehículo que permite tenerla como llave (incluso se podría tener como llave "coordinates" puesto que la dependencia se cumple ne ambas direcciones). Para el VIN (identificador del vehículo) y census_track (identificador del censo 2020) estos atributos serán eliminados de la base de datos, esto por la razón de que ambos no importan ningún tipo de información útil al conjunto de datos ya normalizado.
 
 
 ## Configuración
