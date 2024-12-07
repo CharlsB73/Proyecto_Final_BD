@@ -127,7 +127,7 @@ En este contexto, el objetivo principal del proyecto es facilitar el análisis y
 
 
 #### Consideraciones
-Únicamente se tomarán como válida la clave única del DOl, ya que este es el único atributo capaz de identidicar individualmente a todas las tuplas de la base de datos. Como parte de la tabla "postal_mapping" sí se tendrá como llave primaria el código postal, esto por el cumplimiento de su dependencia funcional con la localizaciópn del vehículo que permite tenerla como llave (incluso se podría tener como llave "coordinates" puesto que la dependencia se cumple ne ambas direcciones). Para el VIN (identificador del vehículo) y census_track (identificador del censo 2020) estos atributos serán eliminados de la base de datos, esto por la razón de que ambos no importan ningún tipo de información útil al conjunto de datos ya normalizado.
+Únicamente se tomarán como válida la clave única del DOL, ya que este es el único atributo capaz de identidicar individualmente a todas las tuplas de la base de datos. Como parte de la tabla "postal_mapping" sí se tendrá como llave primaria el código postal, esto por el cumplimiento de su dependencia funcional con la localizaciópn del vehículo que permite tenerla como llave (incluso se podría tener como llave "coordinates" puesto que la dependencia se cumple ne ambas direcciones). Para el VIN (identificador del vehículo) y census_track (identificador del censo 2020) estos atributos serán eliminados de la base de datos, esto por la razón de que ambos no importan ningún tipo de información útil al conjunto de datos ya normalizado.
 
 
 ## Configuración
