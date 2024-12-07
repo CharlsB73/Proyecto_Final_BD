@@ -307,14 +307,14 @@ CREATE TABLE cleaning.vehicle_data (
     electric_utility TEXT
 );
 
---Corroborar que se efectuar correctamente los DEFAULT
-select *
-from cleaning.vehicle_data
-where range is null
-    or basemsrp is null
-    or model is null
-    or legislative_district is null
-    or vehicle_location is null;
+--Corroborar que se efectuaron correctamente los DEFAULT
+SELECT *
+FROM cleaning.vehicle_data
+WHERE range IS NULL
+    OR basemsrp IS NULL
+    OR model IS NULL
+    OR legislative_district IS NULL
+    OR vehicle_location IS NULL;
 ```
 
 Después, siguió la limpieza de formato del texto:
