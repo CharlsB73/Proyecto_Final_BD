@@ -114,7 +114,7 @@ Para la ubicación utilizamos las entidades "location", "postal_mapping" y "geog
 Por último se tiene la entidad "vehicle" que contiene todos los ID principales de las entidades para la ubicación, detalles del vehículo y compañía de electricidad.
 
 ##### _Simplificación del modelo:_
-Tras haber hecho la normalización bajo nuestra intuición procedimos a verificar todas las dependencias funcionales, revisando se estas estaban implicadas por las llaves. Como se puede observar en la imagen existe una dependencia que no cumple con esta condición, la dependencia {model} → {make}. Como proceso de mejora decidimos aplicar el teorema de Heath para descomponer la entidad en dos, con tal de que la relación quede implicada por las llaves, lo que llevo a la creación de la entidad "model_make" siguiente:
+Tras haber hecho la normalización bajo nuestra intuición procedimos a verificar todas las dependencias funcionales, revisando si estas estaban implicadas por las llaves. Como se puede observar en la imagen existe una dependencia que no cumple con esta condición, la dependencia {model} → {make}. Como proceso de mejora decidimos aplicar el Teorema de Heath para descomponer la entidad en dos, con tal de que la relación quede implicada por las llaves, lo que llevó a la creación de la entidad "model_make" siguiente:
 
 
 ![Q1](img/4FN.jpeg "Normalización hasta 4FN") 
