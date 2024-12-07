@@ -102,6 +102,9 @@ La base de datos original cuenta con un total de 17 atributos y 205,439 tuplas. 
 Para el proceso de normalización decidimos realizar un diagrama de enidad-relación para tener una referencia visual sobre como descomponer los atributos. Primero, decidimos basar la normalización en nuestra intuición con ayuda de las dependencias funcionales encontradas. El resultado fue el siguiente:
 
 
+![Q1](img/Normalizacion.jpeg "Normalización Inicial") 
+
+
 La entidad "electric_utility" va a identificar a cada compañía de electricidad de Washington, consideramos necesario separar esta información en una sola entidad ya que solo existen una muy pequeña cantidad de compañías en comparación con la enorme cantidad de vehículos registrados, lo que resulta en un desperdicio de memoria por repetición.
 
 Para la información del vehículo creamos las entidades "vehicle_specs" y "vehicle_details", la primera contiene las especificaciones de la autonomía, precio de mercado sugerido y si es elegible como combustible limpio; la segunda contienene los detalles del modelo, fabricante, año del modelo y tipo del vehículo. Decidimos separar de esta manera la información para reducir la mayor cantidad de tuplas posibles, esto ya que en general no hay muchas variantes en "vehicles_details" mas que el año del modelo, y para el caso de las especificaciones una gran mayoría de tuplas tiene una autonomía no registrada (0), un precio de mercado sugerido no registrado (0) y un CAFV que solo varía entre 3 opciones, lo que elimina mucha informacion redundadnte reduciendola a un solo ID.
@@ -113,6 +116,8 @@ Por último se tiene la entidad "vehicle" que contiene todos los ID principales 
 ##### _Simplificación del modelo:_
 Tras haber hecho la normalización bajo nuestra intuición procedimos a verificar todas las dependencias funcionales, revisando se estas estaban implicadas por las llaves. Como se puede observar en la imagen existe una dependencia que no cumple con esta condición, la dependencia {model} → {make}. Como proceso de mejora decidimos aplicar el teorema de Heath para descomponer la entidad en dos, con tal de que la relación quede implicada por las llaves, lo que llevo a la creación de la entidad "model_make" siguiente:
 
+
+![Q1](img/4FN.jpeg "Normalización hasta 4FN") 
 
 
 A pesar de que incluyendo esta nueva tabla toda la base de datos alcanzaría la cuarta forma normal, hemos tomado la desición de manener la entidad de los detalles del vehículo como la inicialmente planteada. Nuestro razonamiento detras de esta desición surge por el ploblema de que la nueva entidad sería atómica, es decir que solo tendríamos una nueva entidad para un solo atributo conectado a traves de su llave "make", lo que complica enormemente el análisis de datos y no proporciona una ventaja significativa, incluso podría llegar a ser poco eficiente por el espacio de memoria utilzizado. La atomización de atributos solo puede ser útil en escenarios extremadamente específicos, como sistemas distribuidos que requieren minimizar redundancias en conjuntos de datos masivos. Sin embargo, en este caso, no hay evidencia de que esa atomización sea necesaria. 
