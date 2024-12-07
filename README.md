@@ -6,10 +6,20 @@ Subida del proyecto final elaborado en DataGrip
    1. [Integrantes del equipo](#integrantes-del-equipo)
    1. [Introducción](#introducción)
    1. [Problema a estudiar](#problema-a-estudiar)
-   1. [Descripción de los datos](#descripción-de-los-datos)
-1. [Configuración](#configuración)
+   1. [Descripción de los datos y procesamiento](#descripción-de-los-datos)
+      1. [Diseño](#diseño-original)
+      1. [Atributos](#atributos)
+      1. [Dependencias funcionales](#dependencias-funcionales)
+      1. [Normalización](#normalización)
+      1. [Consideraciones](#consideraciones)
+1. [Configuración y proyecto](#configuración)
    1. [DataGrip y requerimientos](#datagrip-y-requerimientos)
    1. [Base de datos](#base-de-datos)
+      1. [Carga inicial](#carga-inicial)
+      1. [Análisis preliminar](#análisis-preliminar)
+      1. [Limpieza de datos](#limpieza-de-datos)
+      1. [Análisis de datos](#análisis-de-datos)
+      1. [Conclusión](#conclusión)
 1. [Estructura del proyecto](#estructura-del-proyecto)
 
 ## Proyecto
@@ -20,10 +30,7 @@ Subida del proyecto final elaborado en DataGrip
 
 
 ### Introducción
-Durante el análisis y procesamiento de la base de datos de vehículos eléctricos en el estado de Washington, surgen varios desafíos que requieren atención para garantizar la calidad y utilidad del conjunto de datos. En primer lugar, la estructura actual de los datos presenta redundancias significativas, como registros duplicados de fabricantes o modelos debido a inconsistencias en la entrada de datos. Esto complica la agrupación y el análisis, haciendo necesario implementar un proceso de normalización que elimine estas redundancias y reorganice las tablas para cumplir con las formas normales, asegurando que cada atributo dependa exclusivamente de su clave principal.
-Otro problema crítico es la presencia de valores faltantes en atributos importantes como el tipo de carga o la ubicación. Estos vacíos en los datos pueden sesgar el análisis, dificultando la identificación de patrones en la adopción de vehículos eléctricos. Además, es necesario manejar datos erróneos, como ubicaciones mal georreferenciadas o valores inconsistentes en el tipo de carga. Por ejemplo, se han detectado registros donde el mismo modelo de vehículo aparece asociado a diferentes tipos de carga, lo que afecta la confiabilidad del análisis.
-Finalmente, es esencial diseñar un esquema que facilite la exploración de factores clave en la adopción de vehículos eléctricos. Esto incluye analizar las tendencias de registro por fabricante y modelo, la distribución geográfica de los vehículos y la relación entre la infraestructura de carga y la densidad de registros. Estos problemas forman el núcleo del proyecto y su resolución será fundamental para extraer conclusiones útiles que puedan informar decisiones sobre la promoción de esta tecnología en el estado.
-El estudio de una base de datos relacionada con vehículos eléctricos en el estado de Washington también plantea importantes implicaciones éticas que deben ser consideradas. Dado que los datos pueden incluir información sensible, como ubicaciones geográficas específicas o detalles sobre usuarios particulares, es fundamental garantizar la protección de la privacidad y la seguridad de los datos recopilados. Esto implica adherirse a normativas como el Reglamento General de Protección de Datos (GDPR) o leyes locales de privacidad, evitando cualquier uso indebido o exposición de datos personales. Además, el análisis debe ser transparente y responsable, evitando sesgos que puedan derivar en decisiones perjudiciales para ciertos grupos o regiones. Por ejemplo, al identificar factores clave en la adopción de vehículos eléctricos, es crucial no discriminar contra comunidades con menor acceso a recursos o infraestructura, garantizando que los hallazgos se utilicen para promover la equidad y el desarrollo inclusivo de esta tecnología.
+En este proyecto nos encargamos del proceso de normalización, limpieza y análisis de datos de una base de datos acerca de vehículos eléctricos en el estado de Washington, este proyecto tiene como objetivo optimizar la organización del conjunto de datos aplicando todos los conocimientos adquiridos en clase. En los siguientes apartados abordaremos el proceso de la recopilación de los datos sobre los registros de los vehículos, incluyendo datos como el fabricante, modelo, tipo de carga y ubicación dentro del estado. También buscaremos eliminar todo tipo de redundancia, datos faltantes y otros errores durante el proceso de la limpieza, garantizando que el conjunto sea confiable y se encuentre listo para análisis. Por último, el análisis de los datos trabajados tendrá un enfoque en tratar de identificar factores clave en la adopción de esta nueva tecnología, entenderemos el crecimiento constante de la industria dentro del estado de Washington, el cambio variado en los precios de los vehículos y las implicaciones ambientales que estos resultados predicen para el futuro próximo. 
 
 ### Problema a estudiar
 
@@ -36,7 +43,7 @@ El estudio de una base de datos relacionada con vehículos eléctricos en el est
 ### Descripción de los datos
 
 #### Diseño Original
-La base de datos original cuenta con un total de 17 atributos y 205,440 tuplas. Esta fue extraída de https://catalog.data.gov/dataset/electric-vehicle-population-data. Los datos se pueden descargar en [este link](https://drive.google.com/file/d/1x6AvLlwbXijpxsOf5u0_nZI2Tv-gz1vz/view?usp=share_link).
+La base de datos original cuenta con un total de 17 atributos y 205,439 tuplas. Esta fue extraída de https://catalog.data.gov/dataset/electric-vehicle-population-data. Los datos se pueden descargar en [este link](https://drive.google.com/file/d/1x6AvLlwbXijpxsOf5u0_nZI2Tv-gz1vz/view?usp=share_link).
 
 #### Atributos
 - VIN (0-10): Identificador único del vehículo reducido a solo 10 dígitos. Este puede identificar a todas las tuplas individualmente de manera única.
@@ -92,37 +99,37 @@ La base de datos original cuenta con un total de 17 atributos y 205,440 tuplas. 
 {city, county} → {state}
 
 #### Normalización
-La elección del conjunto de entidades de la izquierda en lugar de las de la derecha, aunque estas últimas estén en cuarta forma normal (4FN), se justifica por criterios de eficiencia práctica y diseño lógico de la base de datos, como se detalla a continuación:
+Para el proceso de normalización decidimos realizar un diagrama de enidad-relación para tener una referencia visual sobre como descomponer los atributos. Primero, decidimos basar la normalización en nuestra intuición con ayuda de las dependencias funcionales encontradas. El resultado fue el siguiente:
 
-##### _Simplificación del modelo de datos:_
-Las tablas de la derecha, aunque cumplen con la 4FN, introducen una gran cantidad de tablas con un único atributo (por ejemplo, country_state o city_county). Estas entidades atomizadas complican innecesariamente el diseño de la base de datos y las consultas que operan sobre ellas, incrementando la cantidad de JOINs requeridos para recuperar datos completos. Esto resulta en operaciones más costosas y un mantenimiento más complejo del sistema.
 
-##### _Optimización del rendimiento:_
-El conjunto de entidades de la izquierda combina información relacionada (como location, que incluye postal_code, state, y city) en una única tabla estructurada de manera eficiente. Esto reduce la sobrecarga en el procesamiento de consultas, ya que no es necesario realizar múltiples uniones para obtener información que debería estar agrupada lógicamente. Este diseño balancea la normalización y la eficiencia operativa.
+La entidad "electric_utility" va a identificar a cada compañía de electricidad de Washington, consideramos necesario separar esta información en una sola entidad ya que solo existen una muy pequeña cantidad de compañías en comparación con la enorme cantidad de vehículos registrados, lo que resulta en un desperdicio de memoria por repetición.
 
-##### _Evitar complejidad innecesaria:_
-La atomización de atributos (como en las entidades de la derecha) puede ser útil en escenarios extremadamente específicos, como sistemas distribuidos que requieren minimizar redundancias en conjuntos de datos masivos. Sin embargo, en este caso, no hay evidencia de que esa atomización sea necesaria. Al contrario, un diseño tan fragmentado añade complejidad sin un beneficio claro.
+Para la información del vehículo creamos las entidades "vehicle_specs" y "vehicle_details", la primera contiene las especificaciones de la autonomía, precio de mercado sugerido y si es elegible como combustible limpio; la segunda contienene los detalles del modelo, fabricante, año del modelo y tipo del vehículo. Decidimos separar de esta manera la información para reducir la mayor cantidad de tuplas posibles, esto ya que en general no hay muchas variantes en "vehicles_details" mas que el año del modelo, y para el caso de las especificaciones una gran mayoría de tuplas tiene una autonomía no registrada (0), un precio de mercado sugerido no registrado (0) y un CAFV que solo varía entre 3 opciones, lo que elimina mucha informacion redundadnte reduciendola a un solo ID.
 
-##### _Usabilidad y claridad:_
-Las entidades de la izquierda son más fáciles de interpretar y manipular por los usuarios y desarrolladores. Por ejemplo, tener toda la información de ubicación en una sola tabla (location) permite una comprensión más directa del modelo de datos y hace que la escritura de consultas sea más intuitiva.
+Para la ubicación utilizamos las entidades "location", "postal_mapping" y "geographical_location". Decidimos agrupar de esta manera la información por dos dependencias importantes, la primera es {postal_code} <-> {vehicle_location} y la segunda es {city, county} → {state}, con estas dependencias las entidades "postal_mapping" y "geographical_location" están implicadas por sus llaves, lo cual acerca más a la base de datos a estar en cuarta forma normal. La entidad "location" no es mas que una agrupación de las otras dos entidades junto con el distrito legislativo, atributo para el cual no encontramos ninguna dependencia funcional, lo que complico aislarlo en otra tabla.
 
-##### _Evitar restricciones innecesarias:_
-Crear tablas con un solo atributo (como city_county) puede ser visto como una aplicación excesiva de la normalización, ya que no aporta un beneficio real en la integridad de los datos ni en la reducción de redundancias. Al contrario, introduce restricciones que podrían ser irrelevantes para los requerimientos reales del sistema.
+Por último se tiene la entidad "vehicle" que contiene todos los ID principales de las entidades para la ubicación, detalles del vehículo y compañía de electricidad.
+
+##### _Simplificación del modelo:_
+Tras haber hecho la normalización bajo nuestra intuición procedimos a verificar todas las dependencias funcionales, revisando se estas estaban implicadas por las llaves. Como se puede observar en la imagen existe una dependencia que no cumple con esta condición, la dependencia {model} → {make}. Como proceso de mejora decidimos aplicar el teorema de Heath para descomponer la entidad en dos, con tal de que la relación quede implicada por las llaves, lo que llevo a la creación de la entidad "model_make" siguiente:
+
+
+
+A pesar de que incluyendo esta nueva tabla toda la base de datos alcanzaría la cuarta forma normal, hemos tomado la desición de manener la entidad de los detalles del vehículo como la inicialmente planteada. Nuestro razonamiento detras de esta desición surge por el ploblema de que la nueva entidad sería atómica, es decir que solo tendríamos una nueva entidad para un solo atributo conectado a traves de su llave "make", lo que complica enormemente el análisis de datos y no proporciona una ventaja significativa, incluso podría llegar a ser poco eficiente por el espacio de memoria utilzizado. La atomización de atributos solo puede ser útil en escenarios extremadamente específicos, como sistemas distribuidos que requieren minimizar redundancias en conjuntos de datos masivos. Sin embargo, en este caso, no hay evidencia de que esa atomización sea necesaria. 
 
 ##### _Alineación con los requerimientos del proyecto:_
-En este contexto, el objetivo principal del proyecto es facilitar el análisis y la limpieza de datos sobre vehículos eléctricos. El modelo de la izquierda permite realizar estas tareas de forma más eficiente al mantener una estructura cohesiva y lógica que refleja mejor las relaciones entre los datos del mundo real.
-En resumen, aunque las entidades de la derecha estén en una forma normal más avanzada, su nivel de atomización no era necesario para los objetivos del proyecto y habría introducido complicaciones innecesarias. Por lo tanto, el conjunto de entidades de la izquierda representa un compromiso óptimo entre normalización, claridad y eficiencia operativa.
+En este contexto, el objetivo principal del proyecto es facilitar el análisis y la limpieza de datos sobre vehículos eléctricos. El modelo de los datos inicla permite realizar estas tareas de forma más eficiente al mantener una estructura cohesiva y lógica que refleja mejor las relaciones entre los datos del mundo real. En resumen, aunque con la entidad "model_make" se estaría en cuarta forma normal, su nivel de atomización no es necesario para los objetivos del proyecto pues introduciría complicaciones innecesarias. Por lo tanto, el conjunto de entidades inicial representa un compromiso óptimo entre normalización, claridad y eficiencia operativa.
 
 
 #### Consideraciones
-Se tomarán como claves únicas de las entidades el VIN y el Código Postal, esto porque el DOL no aporta ninguna información relevante para el análisis y por la complejidad de obtener información a través del código censal. Es importante aclarar que aunque no todas las tuplas contienen código postal este se tomará como llave para la entidad de ubicación, pues todas las tablas que contienen los datos de ubicación sí tienen código postal y este devuelve la misma información que se puede obtener del código censal.
+Únicamente se tomarán como válida la clave única del DOl, ya que este es el único atributo capaz de identidicar individualmente a todas las tuplas de la base de datos. Como parte de la tabla "postal_mapping" sí se tendrá como llave primaria el código postal, esto por el cumplimiento de su dependencia funcional con la localizaciópn del vehículo que permite tenerla como llave (incluso se podría tener como llave "coordinates" puesto que la dependencia se cumple ne ambas direcciones). Para el VIN (identificador del vehículo) y census_track (identificador del censo 2020) estos atributos serán eliminados de la base de datos, esto por la razón de que ambos no importan ningún tipo de información útil al conjunto de datos ya normalizado.
 
 
 ## Configuración
 
 
 ### DataGrip y requerimientos
-
+Para realizar el proyecto, se necesita tener instalado la versión 2024.3 de DataGrip. Se puede descargar en la [página oficial de jetbrains](https://www.jetbrains.com/datagrip/whatsnew/). Además, se tiene que tener instalada la versión 16 de Postgresql; se puede instalar siguiendo las instrucciones de la [página oficial de Postgresql](https://www.postgresql.org/download/). Una vez instalado Postgresql y creado un servidor local con usuario y contraseña, se debe entrar a la terminal de postgresql y ejecutar el comando `CREATE DATABASE vehicle_data;` para crear la base de datos. El resto del proceso se hace en DataGrip. Simplemente se tiene que añadir una fuente de datos del proyecto, se deben ingresar las credenciales pertinentes (usuario, contraseña y nombre de la base de datos a la que se quiere conectar) y crear un nuevo script de SQL.
 
 ### Base de datos
 
@@ -453,36 +460,60 @@ LEFT JOIN vehicle_details_complete_table vd
 #### Análisis de datos
 
 ##### Nota: para ver los querys completos, consultar el archivo `data_analysis.sql`
-Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y su interpretación:
+Con los datos limpios, fue pertinente hacer un análisis profundo con consultas SQL que arrojaran datos ricos en contenido para derivar conclusiones relevantes. Se muestran las gráficas obtenidas y una breve descripción:
 
 #### _1.- Cantidad de vehículos registrados por año del modelo (Top 10)_
-
+![Q1](img/query1.png "Gráfica 1") 
+Es claro que 2023 fue el año en el que más coches se registraron, casi doblando en cantidad al año actual 2024
 
 #### _2.- Cantidad de vehículos registrados por condado en Washington (Top 10)_
-
+![Q2](img/query2.png "Gráfica 2") 
+Existe una diferencia abismal entre los coches registrados de SKAGIT y los registrados de KING dentro de Washington. Si bien es cierto que SKAGIT se mantuvo cercano a sus competidores más próximos, KING ha dominado el mercado hasta el último corte de estos datos.
 
 #### _3.- Vehículo con mayor autonomía de cada fabricante (Top 10)_
-
+![Q3](img/query3.png "Gráfica 3") 
+Podemos observar un nivel de autonomía muy similar para las primeras marcas. Sin embargo, la cotizada marca BMW se encuentra resagada en comparacion a Tesla, el competidor más fuerte en la actualidad para coches eléctricos.
 
 #### _4.- Top 10 compañías de electricidad con mayor cantidad de vehículos asignados_
+![Q4](img/query4.png "Gráfica 4") 
+Bonneville Power Administration ha logrado asignar un gran porcentaje de vehículos en distintos estados. Junto a Puget Sound Energy Inc, estas 2 son los líderes eléctricos de Washington.
 
 
 #### _5.- Los 10 autos con precio de mercado sugerido más altos_
-
+![Q5](img/query5.png "Gráfica 5") 
+A pesar de no formar parte de los pioneros en vehículos eléctricos, Porsche sí forma parte de las marcas con precio de mercado por encima del promedio, superando a Tesla y a BMW.
 
 #### _6.- Top 5 distritos legislativos con más autos registrados_
-
+![Q6](img/query6.png "Gráfica 6") 
+Estos son los distritos que más autos registrados. Aunque debe realizarse un estudio más profundo, los datos sugieren que un buen porcentaje de coches registrados en estos estados son modelos KING.
 
 #### _7.- Cantidad de vehículos de batería eléctrica vs híbridos (Top 10)_
-
+![Q7](img/query7.png "Gráfica 7") 
+Los coches eléctricos abundan y superan a la cantidad actual registrada de coches híbridos. Ante tales números, es posible que exista una disminución en precios del mercado para vehículos de marcas especializadas en baterías híbridas.
 
 #### _8.- Proveedor eléctrico con más vehículos registrados por ciudad (Top 10)_
-
+![Q8](img/query8.png "Gráfica 8") 
+ABERDEEN y AIRWAY HEIGHTS han impedido a otros proveedores distribuir la alta demanda de vehiculos con baterías eléctricas o híbridas. 
 
 #### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio (Top 10)_
+![Q9](img/query9.png "Gráfica 9") 
+Sorprendentemente, la considerable cantidad de coches registrados como híbridos o eléctricos no es totalmente elegible para ser considerada como de uso alternativo limpio. No se tienen más datos para analizar, pero esta conclusión podría significar que una buena parte de las marcas no adopta buenos modelos renovables a sus diseños automotrices.
 
+#### Conclusión:
 
+Este proyecto de análisis y normalización de la base de datos de vehículos eléctricos en el estado de Washington nos permitió abordar de manera integral los retos asociados con la gestión eficiente de datos. Al aplicar procesos de limpieza y normalización, eliminamos redundancias y aseguramos la integridad de los datos, lo que no solo optimizó la estructura de la base sino que también garantizó un conjunto de datos confiable para análisis posteriores. La creación de relaciones significativas entre las entidades y la reestructuración de tablas innecesarias en busca de un balance entre normalización y eficiencia práctica demuestran el valor de una base de datos bien diseñada.
+
+El análisis de los datos limpios reveló patrones importantes, como la abundante distribucion de vehículos eléctricos en los condados más urbanizados por parte de pocos proveedores y un incremento en el uso de vehículos eléctricos a lo largo de los últimos años. Estos hallazgos no solo destacan las áreas donde la transición a vehículos eléctricos es más acelerada, sino que también ofrecen insights valiosos para futuras políticas públicas, como incentivos fiscales o infraestructura de carga. Este trabajo subraya la importancia de mantener un enfoque ético al manejar información sensible, garantizando que el uso de datos respete la privacidad y beneficie a la sociedad en su transición hacia tecnologías más sostenibles.
 
 ## Estructura del proyecto
-
-
+```
+├── .idea                                        <- General default archives
+├── Project                                      
+│   ├── data_analysis.sql                           <- SQL querys for data analysis
+│   ├── data_cleaning.sql                           <- Deep data processing, 4NF format
+│   ├── raw_data_exploration.sql                    <- Initial analysis with raw data
+│   └── raw_data_schema_creation.sql                <- First schema creation and data processiong
+├── data                                         <- Link to data download
+├── img                                          <- Images used for README.md
+├── README.md                                    <- The README for developers using this project.
+```
