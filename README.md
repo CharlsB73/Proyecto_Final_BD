@@ -490,7 +490,7 @@ A pesar de no formar parte de los pioneros en vehículos eléctricos, Porsche s�
 ![Q6](img/query6.png "Gráfica 6") 
 Estos son los distritos que más autos registrados. Aunque debe realizarse un estudio más profundo, los datos sugieren que un buen porcentaje de coches registrados en estos estados son modelos KING.
 
-#### _7.- Cantidad de vehículos de batería eléctrica vs híbridos (Top 10)_
+#### _7.- Cantidad de vehículos de batería eléctrica vs híbridos
 ![Q7](img/query7.png "Gráfica 7") 
 Los coches eléctricos abundan y superan a la cantidad actual registrada de coches híbridos. Ante tales números, es posible que exista una disminución en precios del mercado para vehículos de marcas especializadas en baterías híbridas.
 
