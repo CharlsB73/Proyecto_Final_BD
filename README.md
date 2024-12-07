@@ -121,7 +121,7 @@ A pesar de que incluyendo esta nueva tabla toda la base de datos alcanzaría la 
 En este contexto, el objetivo principal del proyecto es facilitar el análisis y la limpieza de datos sobre vehículos eléctricos. El modelo de los datos inicla permite realizar estas tareas de forma más eficiente al mantener una estructura cohesiva y lógica que refleja mejor las relaciones entre los datos del mundo real. En resumen, aunque con la entidad "model_make" se estaría en cuarta forma normal, su nivel de atomización no es necesario para los objetivos del proyecto pues introduciría complicaciones innecesarias. Por lo tanto, el conjunto de entidades inicial representa un compromiso óptimo entre normalización, claridad y eficiencia operativa.
 
 
-#### _Consideraciones Adicionales_
+#### Consideraciones
 Únicamente se tomarán como válida la clave única del DOl, ya que este es el único atributo capaz de identidicar individualmente a todas las tuplas de la base de datos. Como parte de la tabla "postal_mapping" sí se tendrá como llave primaria el código postal, esto por el cumplimiento de su dependencia funcional con la localizaciópn del vehículo que permite tenerla como llave (incluso se podría tener como llave "coordinates" puesto que la dependencia se cumple ne ambas direcciones). Para el VIN (identificador del vehículo) y census_track (identificador del censo 2020) estos atributos serán eliminados de la base de datos, esto por la razón de que ambos no importan ningún tipo de información útil al conjunto de datos ya normalizado.
 
 
