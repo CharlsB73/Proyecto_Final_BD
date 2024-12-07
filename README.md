@@ -498,7 +498,7 @@ Los coches eléctricos abundan y superan a la cantidad actual registrada de coch
 ![Q8](img/query8.png "Gráfica 8") 
 ABERDEEN y AIRWAY HEIGHTS han impedido a otros proveedores distribuir la alta demanda de vehiculos con baterías eléctricas o híbridas. 
 
-#### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio (Top 10)_
+#### _9.- Cantidad de vehículos elegibles para combustible alternativo limpio_
 ![Q9](img/query9.png "Gráfica 9") 
 Sorprendentemente, la considerable cantidad de coches registrados como híbridos o eléctricos no es totalmente elegible para ser considerada como de uso alternativo limpio. No se tienen más datos para analizar, pero esta conclusión podría significar que una buena parte de las marcas no adopta buenos modelos renovables a sus diseños automotrices.
 
