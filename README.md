@@ -99,7 +99,7 @@ La base de datos original cuenta con un total de 17 atributos y 205,439 tuplas. 
 {city, county} → {state}
 
 #### Normalización
-Para el proceso de normalización decidimos realizar un diagrama de enidad-relación para tener una referencia visual sobre como descomponer los atributos. Primero, decidimos basar la normalización en nuestra intuición con ayuda de las dependencias funcionales encontradas. El resultado fue el siguiente:
+Para el proceso de normalización decidimos realizar un diagrama de entidad-relación para tener una referencia visual sobre como descomponer los atributos. Primero, decidimos basar la normalización en nuestra intuición con ayuda de las dependencias funcionales encontradas. El resultado fue el siguiente:
 
 
 ![Q1](img/Normalizacion.jpeg "Normalización Inicial") 
