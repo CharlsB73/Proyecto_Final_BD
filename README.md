@@ -105,7 +105,7 @@ Para el proceso de normalización decidimos realizar un diagrama de entidad-rela
 ![Q1](img/Normalizacion.jpeg "Normalización Inicial") 
 
 
-La entidad "electric_utility" va a identificar a cada compañía de electricidad de Washington, consideramos necesario separar esta información en una sola entidad ya que solo existen una muy pequeña cantidad de compañías en comparación con la enorme cantidad de vehículos registrados, lo que resulta en un desperdicio de memoria por repetición.
+La entidad "electric_utility" va a identificar a cada compañía de electricidad de Washington, consideramos necesario separar esta información en una sola entidad ya que solo existe una muy pequeña cantidad de compañías en comparación con la enorme cantidad de vehículos registrados, lo que resulta en un desperdicio de memoria por repetición.
 
 Para la información del vehículo creamos las entidades "vehicle_specs" y "vehicle_details", la primera contiene las especificaciones de la autonomía, precio de mercado sugerido y si es elegible como combustible limpio; la segunda contienene los detalles del modelo, fabricante, año del modelo y tipo del vehículo. Decidimos separar de esta manera la información para reducir la mayor cantidad de tuplas posibles, esto ya que en general no hay muchas variantes en "vehicles_details" mas que el año del modelo, y para el caso de las especificaciones una gran mayoría de tuplas tiene una autonomía no registrada (0), un precio de mercado sugerido no registrado (0) y un CAFV que solo varía entre 3 opciones, lo que elimina mucha información redundadnte reduciéndola a un solo ID.
 
